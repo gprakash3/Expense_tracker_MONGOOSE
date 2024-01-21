@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly report</title>
+    <link rel="stylesheet" href="/table.css">
+    <style>
+        h1, #weeklyReport{
+             text-align: center;
+         }
+         a{
+             text-decoration: none;
+         }
+         #header{
+             display: inline-flex;
+         }
+     </style>
+</head>
+
+<body>
+    <h1>Weekly Report</h1>
+    <div id="header">
+        <div style="text-align: left;" id="reportDateTime"></div>
+        <div style="position: absolute; right: 10px;"><a href="/expense">Return to homepage</a></div>
+    </div>
+    <div id="year">
+        <h1></h1>
+    </div>
+    <div id="monthyear">
+        <h1></h1>
+    </div>
+    <div id="weeklyReport">
+        <table border="2" width="100%" id="monthlyReportTable">
+            <col style="width:50%">
+            <col style="width:50%">
+            <!-- <col style="width:25%">
+            <col style="width:25%"> -->
+            <thead>
+                <tr>
+                    <th>WEEK</th>
+                    <!-- <th>Income</td> -->
+                    <th>EXPENSE</th>
+                    <!-- <th>Saving</th> -->
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+<script>
+       
+       window.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const reportDateTime = document.getElementById('reportDateTime');
+            const date = new Date();
+            reportDateTime.innerHTML = `Report Generated At: ${date.toLocaleDateString()}`;
+
+            const token = localStorage.getItem('token');
+            const res = await axios.get(`http://localhost:3000/premium/dailyreport`, { headers: { "Authorization": token } });
+            console.log(res.data.datas);
+            showreport(res.data.datas);
+            
+
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+
+    function getweekNumber(obj) {
+        const dt = new Date(obj.date);
+        startDate = new Date(dt.getFullYear(), 0, 1);
+        var days = Math.floor((dt - startDate) /
+            (24 * 60 * 60 * 1000));
+
+        var weekNumber = Math.ceil(days / 7);
+        return weekNumber;
+    }
+
+
+    function showreport(obj) {
+
+        var week = getweekNumber(obj[0]);
+        var totalExpense = 0;
+
+        for (let i = 0; i < obj.length; i++) {
+            if (week === getweekNumber(obj[i])) {
+                totalExpense += obj[i].amount;
+            }
+            else {
+                const tbody = document.getElementById('monthlyReportTable');
+                const row = document.createElement("tr");
+                const cell1 = document.createElement("td");
+                cell1.appendChild(document.createTextNode(`week ${week}`));
+                const cell2 = document.createElement("td");
+                cell2.appendChild(document.createTextNode(totalExpense));
+                row.appendChild(cell1);
+                row.appendChild(cell2);
+                tbody.appendChild(row);
+                i--;
+                //when expense of one week calculated, assign next week and make expense equal 0.
+                if (i !== obj.length-1 ) {
+                    week = getweekNumber(obj[i + 1]);
+                    totalExpense = 0;
+                    
+                }
+            }
+        }
+        const tbody = document.getElementById('monthlyReportTable');
+        const row = document.createElement("tr");
+        const cell1 = document.createElement("td");
+        cell1.appendChild(document.createTextNode(`week ${week}`));
+        const cell2 = document.createElement("td");
+        cell2.appendChild(document.createTextNode(totalExpense));
+        row.appendChild(cell1);
+        row.appendChild(cell2);
+        tbody.appendChild(row);
+    }
+
+
+    function showleaderboard(obj) {
+        if (obj.totalExpense === null) {
+            obj.totalExpense = 0;
+        }
+
+        const tbody = document.getElementById('dailyReportTable');
+        const row = document.createElement("tr");
+        const cell1 = document.createElement("td");
+        const dt = new Date(obj.date)
+        const cellText1 = document.createTextNode(dt.toLocaleDateString());
+        console.log(typeof (obj.date));
+        cell1.appendChild(cellText1);
+        const cell2 = document.createElement("td");
+        const cellText2 = document.createTextNode(obj.description);
+        cell2.appendChild(cellText2);
+        const cell3 = document.createElement("td");
+        cell3.appendChild(document.createTextNode(obj.category));
+        const cell4 = document.createElement("td");
+        cell4.appendChild(document.createTextNode(obj.amount));
+        // const cell5 = document.createElement("td");
+        row.appendChild(cell1);
+        row.appendChild(cell2);
+        row.appendChild(cell3);
+        row.appendChild(cell4);
+        tbody.appendChild(row);
+    }
+
+</script>
+
+</html>

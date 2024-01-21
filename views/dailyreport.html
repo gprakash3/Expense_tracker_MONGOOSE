@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily report</title>
+    <link rel="stylesheet" href="/table.css">
+    <style>
+       h1, #dailyReport{
+            text-align: center;
+        }
+        a{
+            text-decoration: none;
+        }
+        #header{
+            display: inline-flex;
+        }
+    </style>
+</head>
+
+<body>
+    <h1> Day to Day Expenses</h1>
+    <div id="header">
+        <div style="text-align: left;" id="reportDateTime"></div>
+        <div style="position: absolute; right: 10px;"><a href="/expense">Return to homepage</a></div>
+    </div>
+    
+    
+    <div id="year">
+        <h1></h1>
+    </div>
+    <div id="monthyear">
+        <h1></h1>
+    </div>
+    <div id="dailyReport">
+        <table border="2" width="100%" id="dailyReportTable">
+            <col style="width:25%">
+            <col style="width:25%">
+            <col style="width:25%">
+            <col style="width:25%">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>description</td>
+                    <th>category</th>
+                    <th>Expenses</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+<script>
+      //displaying daily report data
+       window.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const reportDateTime = document.getElementById('reportDateTime');
+            const date = new Date();
+            reportDateTime.innerHTML = `Report Generated At: ${date.toLocaleDateString()}`;
+
+            const token = localStorage.getItem('token');
+            const res = await axios.get(`http://localhost:3000/premium/dailyreport`, { headers: { "Authorization": token } });
+            console.log(res.data.datas);
+            for(let i=0;i<res.data.datas.length;i++)
+            {
+            showleaderboard(res.data.datas[i]);
+            }
+
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+
+    function showleaderboard(obj) {
+        if (obj.totalExpense === null) {
+            obj.totalExpense = 0;
+        }
+
+        const tbody = document.getElementById('dailyReportTable');
+        const row = document.createElement("tr");
+        const cell1 = document.createElement("td");
+        const dt = new Date(obj.date)
+        const cellText1 = document.createTextNode(dt.toLocaleDateString());
+        console.log(typeof(obj.date));
+        cell1.appendChild(cellText1);
+        const cell2 = document.createElement("td");
+        const cellText2 = document.createTextNode(obj.description);
+        cell2.appendChild(cellText2);
+        const cell3 = document.createElement("td");
+        cell3.appendChild(document.createTextNode(obj.category));
+        const cell4 = document.createElement("td");
+        cell4.appendChild(document.createTextNode(obj.amount));
+        // const cell5 = document.createElement("td");
+        row.appendChild(cell1);
+        row.appendChild(cell2);
+        row.appendChild(cell3);
+        row.appendChild(cell4);
+        tbody.appendChild(row);
+    }
+
+</script>
+
+
+</html>

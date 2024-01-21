@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>monthly report</title>
+    <link rel="stylesheet" href="/table.css">
+    <style>
+        h1, #monthlyReport{
+             text-align: center;
+         }
+         a{
+             text-decoration: none;
+         }
+         #header{
+             display: inline-flex;
+         }
+     </style>
+</head>
+
+<body>
+    <h1> Monthly Expenses</h1>
+    <div id="header">
+        <div style="text-align: left;" id="reportDateTime"></div>
+        <div style="position: absolute; right: 10px;"><a href="/expense">Return to homepage</a></div>
+    </div>
+    <div id="year">
+        <h1></h1>
+
+        <div id="monthlyReport">
+            <table border="2" width="100%" id="monthlyReportTable">
+                <col style="width:50%">
+                <col style="width:50%">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Expenses</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+<script>
+       
+       window.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const reportDateTime = document.getElementById('reportDateTime');
+            const date = new Date();
+            reportDateTime.innerHTML = `Report Generated At: ${date.toLocaleDateString()}`;
+
+            const token = localStorage.getItem('token');
+            const res = await axios.get(`http://localhost:3000/premium/dailyreport`, { headers: { "Authorization": token } });
+            console.log(res.data.datas);
+            showreport(res.data.datas);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+
+    function getMonth(obj) {
+        const dt = new Date(obj.date);
+        return dt.getMonth();
+    }
+
+    function showreport(obj) {
+        var monthnum = getMonth(obj[0]);
+        console.log(monthnum)
+        var totalExpense = 0;
+        var month;
+
+
+        for (let i = 0; i < obj.length; i++) {
+            if (monthnum === getMonth(obj[i])) {
+                totalExpense += obj[i].amount;
+            }
+            else {
+                if (monthnum === 0) { month = 'january' }
+                else if (monthnum === 1) { month = 'February' }
+                else if (monthnum === 2) { month = 'March' }
+                else if (monthnum === 3) { month = 'April' }
+                else if (monthnum === 4) { month = 'May' }
+                else if (monthnum === 5) { month = 'June' }
+                else if (monthnum === 6) { month = 'July' }
+                else if (monthnum === 7) { month = 'August' }
+                else if (monthnum === 8) { month = 'September' }
+                else if (monthnum === 9) { month = 'October' }
+                else if (monthnum === 10) { month = 'November' }
+                else if (monthnum === 11) { month = 'December' }
+                const tbody = document.getElementById('monthlyReportTable');
+                const row = document.createElement("tr");
+                const cell1 = document.createElement("td");
+                cell1.appendChild(document.createTextNode(`${month}`));
+                const cell2 = document.createElement("td");
+                cell2.appendChild(document.createTextNode(totalExpense));
+                row.appendChild(cell1);
+                row.appendChild(cell2);
+                tbody.appendChild(row);
+                i--;
+                if (i !== obj.length - 1) {
+                    monthnum = getMonth(obj[i + 1]);
+                    totalExpense = 0;
+                }
+            }
+        }
+        if (monthnum === 0) { month = 'january' }
+        else if (monthnum === 1) { month = 'February' }
+        else if (monthnum === 2) { month = 'March' }
+        else if (monthnum === 3) { month = 'April' }
+        else if (monthnum === 4) { month = 'May' }
+        else if (monthnum === 5) { month = 'June' }
+        else if (monthnum === 6) { month = 'July' }
+        else if (monthnum === 7) { month = 'August' }
+        else if (monthnum === 8) { month = 'September' }
+        else if (monthnum === 9) { month = 'October' }
+        else if (monthnum === 10) { month = 'November' }
+        else if (monthnum === 11) { month = 'December' }
+        const tbody = document.getElementById('monthlyReportTable');
+        const row = document.createElement("tr");
+        const cell1 = document.createElement("td");
+        cell1.appendChild(document.createTextNode(`${month}`));
+        const cell2 = document.createElement("td");
+        cell2.appendChild(document.createTextNode(totalExpense));
+        row.appendChild(cell1);
+        row.appendChild(cell2);
+        tbody.appendChild(row);
+    }
+
+</script>
+</html>

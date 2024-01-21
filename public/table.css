@@ -1,0 +1,15 @@
+thead{
+    background-color: rgb(237, 247, 196);
+}
+th{
+    border-radius: 5px;
+}
+tr{
+    border-radius: 5px;
+}
+table{
+    border-radius: 6px;
+}
+td{
+    text-align: center;
+}
