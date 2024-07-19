@@ -1,7 +1,6 @@
 const express = require('express');
 const fs = require('fs');
 const bodyParser = require('body-parser');
-const sequelize = require('./util/database');
 const app = express();
 const path = require('path');
 const mongoose=require('mongoose');
@@ -73,9 +72,10 @@ app.use((req,res) => {
 // User.hasMany(Link);
 // Link.belongsTo(User);
 
-mongoose.connect('mongodb+srv://prakash:prakash9031@cluster0.c9lcyai.mongodb.net/expenseTracker?retryWrites=true&w=majority')
+mongoose.connect(process.env.MONGODB_CONNECT)
     .then(result =>{
         console.log('app connected');
         app.listen(3000)
     })
     .catch(err => console.log(err));
+    
